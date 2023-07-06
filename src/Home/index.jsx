@@ -49,7 +49,7 @@ const CsvReader = () => {
     if(csvArray.length<=1){
       return []
     }
-    return csvArray.slice(1).map(item=> {
+    return csvArray.slice(1).filter(item=> !!item[0]).map(item=> {
       const keyArray = [
         "代码",
         "名称",
@@ -80,6 +80,13 @@ const CsvReader = () => {
       keyArray.forEach((key,index)=> {
         res[key] = item[index]
       })
+      console.log(res)
+      res['单手价格'] = Number(res['最新价']) * Number(res['每手'])
+      res['正股'] = res['名称'].substring(0,2)
+      res['股价上涨1收益'] = Number(res['每手']) * Number(res['换股比率'])
+      res['换股价'] = Number(res['打和点']) - Number(res['行使价'])
+      res['股价上涨1%收益'] = 0.01 * Number(res['打和点']) * Number(res['对冲值']) * Number(res['每手']) / Number(res['换股比率'])
+      res['性价比'] = Number(res['股价上涨1%收益']) / Number(res['单手价格'])
       return res
     })
   },[csvArray])

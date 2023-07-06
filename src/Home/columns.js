@@ -23,6 +23,12 @@ export const columns = [
   "街货比",
   "类型",
   "成交额",
+  "单手价格",
+  "正股",
+  "股价上涨1收益",
+  "换股价",
+  "股价上涨1%收益",
+  "性价比"
 ].map((item) => ({
   title: item,
   dataIndex: item,
