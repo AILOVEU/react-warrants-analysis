@@ -1,11 +1,12 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useState } from "react";
 import Papa from "papaparse"; // 解析cvs插件 市面上使用较多的
 import jschardet from "jschardet"; // 编码识别
-import WarrantsTable from './WarrantsTable'
+import WarrantsTable from "./WarrantsTable";
+import { Upload, Button } from "antd";
+import WarrantsFilter from "./WarrantsFilter";
 
 const CsvReader = () => {
-  const [csvFile, setCsvFile] = useState(null);
   const [csvArray, setCsvArray] = useState([]);
 
   const checkEncoding = (base64Str) => {
@@ -15,7 +16,7 @@ const CsvReader = () => {
     let encoding = jschardet.detect(str);
     encoding = encoding.encoding;
     // 有时候会识别错误
-    if (encoding == "windows-1252") {
+    if (encoding === "windows-1252") {
       encoding = "ANSI";
     }
     return encoding;
@@ -45,71 +46,21 @@ const CsvReader = () => {
     return false;
   };
 
-  const tableData = useMemo(()=> {
-    if(csvArray.length<=1){
-      return []
-    }
-    return csvArray.slice(1).filter(item=> !!item[0]).map(item=> {
-      const keyArray = [
-        "代码",
-        "名称",
-        "综合评分",
-        "最新价",
-        "每手",
-        "换股比率",
-        "涨跌幅",
-        "打和点",
-        "行使价",
-        "成交量",
-        "有效杠杆",
-        "最后交易日",
-        "溢价",
-        "敏感度",
-        "对冲值",
-        "到期日",
-        "上市日期",
-        "引伸波幅",
-        "价内/价外",
-        "杠杆比率(倍)",
-        "序号",
-        "街货比",
-        "类型",
-        "成交额",
-      ]
-      const res = {}
-      keyArray.forEach((key,index)=> {
-        res[key] = item[index]
-      })
-      console.log(res)
-      res['单手价格'] = Number(res['最新价']) * Number(res['每手'])
-      res['正股'] = res['名称'].substring(0,2)
-      res['股价上涨1收益'] = Number(res['每手']) * Number(res['换股比率'])
-      res['换股价'] = Number(res['打和点']) - Number(res['行使价'])
-      res['股价上涨1%收益'] = 0.01 * Number(res['打和点']) * Number(res['对冲值']) * Number(res['每手']) / Number(res['换股比率'])
-      res['性价比'] = Number(res['股价上涨1%收益']) / Number(res['单手价格'])
-      return res
-    })
-  },[csvArray])
-
   return (
     <div>
-      <input
-        type="file"
-        accept=".csv"
-        onChange={(e) => {
-          setCsvFile(e.target.files[0]);
-        }}
-      />
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          beforeUpload(csvFile);
-        }}
+      <Upload
+        beforeUpload={beforeUpload}
+        maxCount={1}
+        accept={".csv"}
+        // showUploadList={false}
       >
-        Submit
-      </button>
+        <Button>点击上传csv</Button>
+      </Upload>
       <br />
-      <WarrantsTable data={tableData}/>
+      <WarrantsFilter/ >
+      <div>
+        <WarrantsTable data={csvArray} />
+      </div>
     </div>
   );
 };
