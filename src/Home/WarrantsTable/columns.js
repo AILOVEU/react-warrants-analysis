@@ -1,6 +1,7 @@
 export const columns = [
   "代码",
   "正股",
+  "正股价",
   "类型",
   "名称",
   "最新价",
@@ -35,20 +36,21 @@ export const columns = [
     dataIndex: item,
     key: item,
     width: 120,
-    sorter: (a, b) => parseFloat(a[item]) - parseFloat(b[item]),
-    onFilter: (value, record) => record[item].includes(value),
+    // sorter: (a, b) => parseFloat(a[item]) - parseFloat(b[item]),
+    // onFilter: (value, record) => record[item].includes(value),
   }
   let extraCfg = {}
   switch(item){
-    case '类型':
+    case '名称':
       extraCfg =  {
-        filters: [
-          { text: '购', value: '购' },
-          { text: '沽', value: '沽' },
-        ]
+        width: 200
       }
       break
-    // case ''
+    case '性价比':
+      extraCfg =  {
+        sorter: (a, b) => parseFloat(a[item]) - parseFloat(b[item]),
+      }
+      break
   }
   return {
     ...baseCfg,
