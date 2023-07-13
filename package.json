@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build --publicPath='react-warrants-analysis'",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "push": "yarn build && git add . && git commit -m 'build-deploy' && git push",
