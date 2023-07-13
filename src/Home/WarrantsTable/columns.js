@@ -1,9 +1,9 @@
 export const columns = [
   "代码",
+  "名称",
   "正股",
   "正股价",
   "类型",
-  "名称",
   "最新价",
   // "每手",
   // "换股比率",
@@ -13,10 +13,11 @@ export const columns = [
   // "成交量",
   "有效杠杆",
   "最后交易日",
+  "距离交易日",
   "溢价",
   // "敏感度",
   "对冲值",
-  "到期日",
+  // "到期日",
   // "上市日期",
   "引伸波幅",
   "价内/价外",
@@ -38,22 +39,30 @@ export const columns = [
     width: 120,
     // sorter: (a, b) => parseFloat(a[item]) - parseFloat(b[item]),
     // onFilter: (value, record) => record[item].includes(value),
-  }
-  let extraCfg = {}
-  switch(item){
-    case '名称':
-      extraCfg =  {
-        width: 200
-      }
-      break
-    case '性价比':
-      extraCfg =  {
-        sorter: (a, b) => parseFloat(a[item]) - parseFloat(b[item]),
-      }
-      break
+  };
+  let extraCfg = {};
+  if (item === "名称") {
+    extraCfg = {
+      fixed: true,
+      width: 200,
+    };
+  } else if (["性价比", "价内/价外", "距离交易日","溢价"].includes(item)) {
+    extraCfg = {
+      sorter: (a, b) => parseFloat(a[item]) - parseFloat(b[item]),
+    };
+    if ("性价比" === item) {
+      extraCfg = {
+        ...extraCfg,
+        defaultSortOrder: 'descend',
+      };
+    }
+  } else if (["股价上涨1收益", "股价上涨1%收益"].includes(item)) {
+    extraCfg = {
+      width: 150,
+    };
   }
   return {
     ...baseCfg,
-    ...extraCfg
-  }
+    ...extraCfg,
+  };
 });

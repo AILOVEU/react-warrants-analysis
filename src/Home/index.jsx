@@ -6,6 +6,9 @@ import WarrantsTable from "./WarrantsTable";
 import { Upload, Button } from "antd";
 import WarrantsFilter from "./WarrantsFilter";
 import { keyArray } from "./constant";
+import dayjs from "dayjs";
+var customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
 
 const CsvReader = () => {
   const [csvArray, setCsvArray] = useState([]);
@@ -81,6 +84,7 @@ const CsvReader = () => {
           (100 * parseFloat(res["打和点"])) /
           (100 + parseFloat(res["溢价"]))
         ).toFixed(2);
+        // 衍生品价格变化 = 正股价格变化 / 换股比率 * 对冲值
         res["股价上涨1%收益"] = (
           (0.01 *
             parseFloat(res["正股价"]) *
@@ -92,7 +96,15 @@ const CsvReader = () => {
           (parseFloat(res["股价上涨1%收益"]) / parseFloat(res["单手价格"])) *
           100
         ).toFixed(2);
+        res["距离交易日"] = dayjs(res["最后交易日"], "YYYY/MM/DD").diff(
+          dayjs(),
+          "day"
+        );
         return res;
+      })
+      .filter((item) => item["距离交易日"] > 0)
+      .filter((item) => {
+        return parseFloat(item["对冲值"]) !== 0;
       });
   }, [csvArray]);
 
@@ -107,9 +119,8 @@ const CsvReader = () => {
         <Button>点击上传csv</Button>
       </Upload>
       <br />
-      <WarrantsFilter data={validMapData} setFilterParam={setFilterParam} />
-      <br />
-      <div>
+      <div key={JSON.stringify(csvArray)}>
+        <WarrantsFilter data={validMapData} setFilterParam={setFilterParam} />
         <WarrantsTable data={validMapData} filterParam={filterParam} />
       </div>
     </div>
