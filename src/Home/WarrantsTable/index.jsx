@@ -49,9 +49,9 @@ const WarrantsTable = ({ data, filterParam }) => {
       dataSource={tableData}
       // pagination={false}
       pagination={{
-        pageSize: 100,
+        pageSize: 200,
       }}
-      scroll={{ x: 800, y: 500 }}
+      scroll={{ x: 800, y: 400 }}
       bordered
     />
   );

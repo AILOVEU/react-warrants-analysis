@@ -28,24 +28,24 @@ const WarrantsFilter = ({ data, setFilterParam }) => {
       0: "0%",
       30: "30%",
       50: "50%",
-      100: "100%",
     },
     0,
-    100,
+    50,
   ];
 
   const 单手价格Marks = useMemo(() => {
     const priceList = data.length
       ? data.map((item) => parseFloat(item["单手价格"]))
       : [0];
-    const max = Math.max(...priceList, 3000);
-    const min = Math.min(...priceList);
+    const max = 5000;
+    const min = 0;
     return [
       {
         0: 0,
-        // [min]: min,
+        500: 500,
+        1000: 1000,
         3000: 3000,
-        [max]: max,
+        5000: 5000,
       },
       min,
       max,
@@ -57,11 +57,11 @@ const WarrantsFilter = ({ data, setFilterParam }) => {
       ? data.map((item) => parseFloat(item["价内/价外"]))
       : [0];
     const max = Math.max(...list, 100);
-    const min = Math.min(...list, -20);
+    const min = -20;
     return [
       {
+        '-20': '-20%',
         0: "0%",
-        [min]: min + "%",
         [max]: max + "%",
       },
       min,
@@ -73,11 +73,14 @@ const WarrantsFilter = ({ data, setFilterParam }) => {
     const list = data.length
       ? data.map((item) => parseFloat(item["溢价"]))
       : [0];
-    const max = Math.max(...list, 20);
-    const min = Math.min(...list, -100);
+    const max = 50;
+    const min = Math.min(...list, -10);
     return [
       {
         0: "0%",
+        5: '5%',
+        10: '10%',
+        15: '15%',
         [min]: min + "%",
         [max]: max + "%",
       },
@@ -92,8 +95,6 @@ const WarrantsFilter = ({ data, setFilterParam }) => {
       : [0];
     const max = Math.max(...list, 365);
     const min = Math.min(...list, 0);
-    console.log(min, max, list);
-
     return [
       {
         0: 0,
@@ -119,7 +120,7 @@ const WarrantsFilter = ({ data, setFilterParam }) => {
       街货比: [0, 30],
       单手价格: [0, 3000],
       距离交易日: [30, Infinity],
-      溢价: [-100, 20],
+      溢价: [-100, 15],
     };
   }, []);
 

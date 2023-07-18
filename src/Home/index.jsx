@@ -68,32 +68,39 @@ const CsvReader = () => {
       })
       .map((item) => {
         const res = { ...item };
+        const isLong = ["购"].includes(res["类型"]);
+        const longOperator = isLong ? 1 : -1;
         // TODO big.js bignumbe
         // TODO 以下计算仅支持认购证
         res["单手价格"] = Math.floor(
           parseFloat(res["最新价"]) * parseFloat(res["每手"])
         );
         res["正股"] = res["名称"].substring(0, 2);
-        res["股价上涨1收益"] = Math.floor(
-          parseFloat(res["每手"]) / parseFloat(res["换股比率"])
-        );
+        res["股价变动1收益"] = (
+          (1 * parseFloat(res["对冲值"]) * parseFloat(res["每手"])) /
+          parseFloat(res["换股比率"])
+        ).toFixed(2);
         res["换股价"] = (
           parseFloat(res["打和点"]) - parseFloat(res["行使价"])
         ).toFixed(2);
+        // 购 溢价 =（ 打和点 - 正股价 ） / 正股价 = 打和点/ 正股价 - 1
+        // 沽 溢价 = -（ 打和点 - 正股价） / 正股价
         res["正股价"] = (
-          (100 * parseFloat(res["打和点"])) /
-          (100 + parseFloat(res["溢价"]))
+          parseFloat(res["打和点"]) /
+          (1 + (parseFloat(res["溢价"]) * longOperator) / 100)
         ).toFixed(2);
         // 衍生品价格变化 = 正股价格变化 / 换股比率 * 对冲值
-        res["股价上涨1%收益"] = (
-          (0.01 *
-            parseFloat(res["正股价"]) *
-            parseFloat(res["对冲值"]) *
-            parseFloat(res["每手"])) /
-          parseFloat(res["换股比率"])
-        ).toFixed(2);
+        res["股价变动1%收益"] =
+          longOperator *
+          (
+            (0.01 *
+              parseFloat(res["正股价"]) *
+              parseFloat(res["对冲值"]) *
+              parseFloat(res["每手"])) /
+            parseFloat(res["换股比率"])
+          ).toFixed(2);
         res["性价比"] = (
-          (parseFloat(res["股价上涨1%收益"]) / parseFloat(res["单手价格"])) *
+          (parseFloat(res["股价变动1%收益"]) / parseFloat(res["单手价格"])) *
           100
         ).toFixed(2);
         res["距离交易日"] = dayjs(res["最后交易日"], "YYYY/MM/DD").diff(
